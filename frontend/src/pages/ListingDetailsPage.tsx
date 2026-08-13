@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useListing, useDeleteListing } from '../features/listings/hooks'
 import { conditionLabels, statusLabels } from '../features/listings/types'
+import { ListingGallery } from '../features/listings/components/ListingGallery'
 import { useAuth } from '../features/auth/hooks'
 import { formatPrice, formatDate } from '../lib/format'
 
@@ -29,18 +30,7 @@ export function ListingDetailsPage() {
       </Link>
 
       <div className="mt-3 grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* Фото (появятся на следующем шаге) */}
-        <div className="flex aspect-square items-center justify-center rounded-lg border border-gray-200 bg-gray-100 text-gray-400">
-          {listing.imageUrls.length > 0 ? (
-            <img
-              src={listing.imageUrls[0]}
-              alt={listing.title}
-              className="h-full w-full rounded-lg object-cover"
-            />
-          ) : (
-            'Нет фото'
-          )}
-        </div>
+        <ListingGallery images={listing.images} title={listing.title} />
 
         <div>
           <h1 className="text-2xl font-bold">{listing.title}</h1>

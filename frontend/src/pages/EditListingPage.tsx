@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useListing, useUpdateListing } from '../features/listings/hooks'
 import { ListingForm } from '../features/listings/components/ListingForm'
+import { ImageManager } from '../features/listings/components/ImageManager'
 import { getApiErrorMessage } from '../lib/errors'
 import type { UpdateListingRequest } from '../features/listings/types'
 
@@ -16,6 +17,13 @@ export function EditListingPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="mb-6 text-2xl font-bold">Редактирование объявления</h1>
+
+      <section className="mb-8">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+          Фотографии
+        </h2>
+        <ImageManager listingId={listing.id} images={listing.images} />
+      </section>
 
       <ListingForm
         withStatus

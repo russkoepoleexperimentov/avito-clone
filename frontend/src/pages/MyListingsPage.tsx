@@ -52,6 +52,15 @@ export function MyListingsPage() {
         <ul className="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 bg-white">
           {listings.map((l) => (
             <li key={l.id} className="flex items-center gap-4 p-4">
+              <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                {l.primaryImageUrl ? (
+                  <img src={l.primaryImageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xs text-gray-300">
+                    нет
+                  </div>
+                )}
+              </div>
               <div className="flex-1">
                 <Link to={`/listings/${l.id}`} className="font-medium hover:text-brand-600">
                   {l.title}

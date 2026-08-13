@@ -13,6 +13,11 @@ export default defineConfig({
         target: 'http://localhost:5080',
         changeOrigin: true,
       },
+      // Загруженные фото раздаёт backend из wwwroot/uploads.
+      '/uploads': {
+        target: 'http://localhost:5080',
+        changeOrigin: true,
+      },
     },
   },
 })

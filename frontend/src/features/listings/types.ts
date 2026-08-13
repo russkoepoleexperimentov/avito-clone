@@ -26,6 +26,13 @@ export interface ListingListItem {
   createdAt: string
 }
 
+export interface ListingImage {
+  id: string
+  url: string
+  isPrimary: boolean
+  sortOrder: number
+}
+
 export interface Listing {
   id: string
   title: string
@@ -39,7 +46,7 @@ export interface Listing {
   userId: string
   sellerName: string
   viewsCount: number
-  imageUrls: string[]
+  images: ListingImage[]
   createdAt: string
   updatedAt: string
 }

@@ -2,6 +2,7 @@ import { api } from '../../lib/api'
 import type {
   CreateListingRequest,
   Listing,
+  ListingImage,
   ListingListItem,
   ListingStatus,
   UpdateListingRequest,
@@ -30,4 +31,21 @@ export async function getMyListings(status?: ListingStatus): Promise<ListingList
 
 export async function deleteListing(id: string): Promise<void> {
   await api.delete(`/listings/${id}`)
+}
+
+export async function uploadImages(listingId: string, files: File[]): Promise<ListingImage[]> {
+  const form = new FormData()
+  files.forEach((f) => form.append('files', f))
+  const res = await api.post<ListingImage[]>(`/listings/${listingId}/images`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return res.data
+}
+
+export async function deleteImage(listingId: string, imageId: string): Promise<void> {
+  await api.delete(`/listings/${listingId}/images/${imageId}`)
+}
+
+export async function setPrimaryImage(listingId: string, imageId: string): Promise<void> {
+  await api.put(`/listings/${listingId}/images/${imageId}/primary`)
 }

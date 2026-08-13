@@ -1,5 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createListing, deleteListing, getListing, getMyListings, updateListing } from './api'
+import {
+  createListing,
+  deleteImage,
+  deleteListing,
+  getListing,
+  getMyListings,
+  setPrimaryImage,
+  updateListing,
+  uploadImages,
+} from './api'
 import type { ListingStatus, UpdateListingRequest } from './types'
 
 export function useListing(id: string) {
@@ -38,4 +47,25 @@ export function useDeleteListing() {
     mutationFn: deleteListing,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my-listings'] }),
   })
+}
+
+/** Мутации управления фото; после успеха обновляют кэш карточки. */
+export function useListingImages(listingId: string) {
+  const qc = useQueryClient()
+  const invalidate = () => qc.invalidateQueries({ queryKey: ['listing', listingId] })
+
+  const upload = useMutation({
+    mutationFn: (files: File[]) => uploadImages(listingId, files),
+    onSuccess: invalidate,
+  })
+  const remove = useMutation({
+    mutationFn: (imageId: string) => deleteImage(listingId, imageId),
+    onSuccess: invalidate,
+  })
+  const makePrimary = useMutation({
+    mutationFn: (imageId: string) => setPrimaryImage(listingId, imageId),
+    onSuccess: invalidate,
+  })
+
+  return { upload, remove, makePrimary }
 }
