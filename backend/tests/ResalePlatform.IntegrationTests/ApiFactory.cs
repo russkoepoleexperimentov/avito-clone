@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ResalePlatform.Infrastructure.Persistence;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -8,7 +12,8 @@ namespace ResalePlatform.IntegrationTests;
 
 /// <summary>
 /// Поднимает приложение поверх одноразового PostgreSQL в Docker (Testcontainers).
-/// Миграции и seed выполняются штатно при старте приложения.
+/// Регистрация AppDbContext подменяется на строку подключения контейнера,
+/// чтобы не зависеть от appsettings. Миграции и seed выполняются при старте.
 /// </summary>
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
@@ -19,12 +24,12 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
-        builder.ConfigureAppConfiguration((_, config) =>
+        builder.ConfigureTestServices(services =>
         {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Default"] = _db.GetConnectionString(),
-            });
+            services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(_db.GetConnectionString())
+                       .UseSnakeCaseNamingConvention());
         });
     }
 
