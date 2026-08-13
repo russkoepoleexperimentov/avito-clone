@@ -16,3 +16,13 @@ export function flattenCategories(categories: Category[], depth = 0): CategoryOp
     ...flattenCategories(c.children, depth + 1),
   ])
 }
+
+/** Ищет категорию по slug в дереве (в глубину). */
+export function findCategoryBySlug(categories: Category[], slug: string): Category | undefined {
+  for (const c of categories) {
+    if (c.slug === slug) return c
+    const found = findCategoryBySlug(c.children, slug)
+    if (found) return found
+  }
+  return undefined
+}

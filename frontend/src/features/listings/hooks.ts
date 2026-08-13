@@ -9,7 +9,16 @@ import {
   updateListing,
   uploadImages,
 } from './api'
+import { getListings, type ListingQuery } from './catalog'
 import type { ListingStatus, UpdateListingRequest } from './types'
+
+export function useListings(query: ListingQuery) {
+  return useQuery({
+    queryKey: ['listings', query],
+    queryFn: () => getListings(query),
+    placeholderData: (prev) => prev, // не мигаем при смене страницы/фильтров
+  })
+}
 
 export function useListing(id: string) {
   return useQuery({
