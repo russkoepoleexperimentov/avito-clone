@@ -1,13 +1,17 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ResalePlatform.Application.Common.Interfaces;
+using ResalePlatform.Infrastructure.Auth;
+using ResalePlatform.Infrastructure.Identity;
 using ResalePlatform.Infrastructure.Persistence;
 
 namespace ResalePlatform.Infrastructure;
 
 public static class DependencyInjection
 {
-    /// <summary>Регистрирует инфраструктурные сервисы (EF Core / PostgreSQL).</summary>
+    /// <summary>Регистрирует инфраструктурные сервисы (EF Core / PostgreSQL / Identity / JWT).</summary>
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
@@ -17,6 +21,21 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString)
                    .UseSnakeCaseNamingConvention());
+
+        services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddRoles<IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>();
+
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
