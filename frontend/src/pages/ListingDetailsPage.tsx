@@ -71,6 +71,12 @@ export function ListingDetailsPage() {
 
           {isOwner ? (
             <div className="mt-6 flex gap-2">
+              <Link
+                to={`/listings/${listing.id}/edit`}
+                className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+              >
+                Редактировать
+              </Link>
               <button
                 onClick={handleDelete}
                 disabled={del.isPending}

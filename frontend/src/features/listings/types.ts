@@ -52,3 +52,7 @@ export interface CreateListingRequest {
   city: string
   categoryId: string
 }
+
+export interface UpdateListingRequest extends CreateListingRequest {
+  status: ListingStatus
+}

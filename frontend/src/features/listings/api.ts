@@ -1,9 +1,19 @@
 import { api } from '../../lib/api'
-import type { CreateListingRequest, Listing, ListingListItem, ListingStatus } from './types'
+import type {
+  CreateListingRequest,
+  Listing,
+  ListingListItem,
+  ListingStatus,
+  UpdateListingRequest,
+} from './types'
 
 export async function createListing(data: CreateListingRequest): Promise<{ id: string }> {
   const res = await api.post<{ id: string }>('/listings', data)
   return res.data
+}
+
+export async function updateListing(id: string, data: UpdateListingRequest): Promise<void> {
+  await api.put(`/listings/${id}`, { id, ...data })
 }
 
 export async function getListing(id: string): Promise<Listing> {

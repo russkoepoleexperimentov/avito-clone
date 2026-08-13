@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createListing, deleteListing, getListing, getMyListings } from './api'
-import type { ListingStatus } from './types'
+import { createListing, deleteListing, getListing, getMyListings, updateListing } from './api'
+import type { ListingStatus, UpdateListingRequest } from './types'
 
 export function useListing(id: string) {
   return useQuery({
@@ -19,6 +19,17 @@ export function useMyListings(status?: ListingStatus) {
 
 export function useCreateListing() {
   return useMutation({ mutationFn: createListing })
+}
+
+export function useUpdateListing(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: UpdateListingRequest) => updateListing(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['listing', id] })
+      qc.invalidateQueries({ queryKey: ['my-listings'] })
+    },
+  })
 }
 
 export function useDeleteListing() {

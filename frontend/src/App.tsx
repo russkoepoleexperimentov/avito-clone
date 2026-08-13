@@ -5,6 +5,7 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ListingDetailsPage } from './pages/ListingDetailsPage'
 import { CreateListingPage } from './pages/CreateListingPage'
+import { EditListingPage } from './pages/EditListingPage'
 import { MyListingsPage } from './pages/MyListingsPage'
 import { FavoritesPage } from './pages/FavoritesPage'
 import { ProfilePage } from './pages/ProfilePage'
@@ -24,6 +25,7 @@ export default function App() {
         {/* Только для авторизованных */}
         <Route element={<ProtectedRoute />}>
           <Route path="listings/new" element={<CreateListingPage />} />
+          <Route path="listings/:id/edit" element={<EditListingPage />} />
           <Route path="my-listings" element={<MyListingsPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
           <Route path="profile" element={<ProfilePage />} />
