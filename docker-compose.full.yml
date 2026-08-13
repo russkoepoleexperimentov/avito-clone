@@ -1,0 +1,51 @@
+# Полный стек в контейнерах: одна команда поднимает БД, API и фронтенд.
+#   docker compose -f docker-compose.full.yml up --build
+# Фронтенд: http://localhost:8080 · Swagger: http://localhost:5080/swagger
+name: resaleplatform-full
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: resaleplatform
+      POSTGRES_USER: resale
+      POSTGRES_PASSWORD: resale
+    volumes:
+      - pgdata_full:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resale -d resaleplatform"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=resaleplatform;Username=resale;Password=resale"
+      Jwt__Key: "docker-demo-super-secret-key-change-me-32+chars!!"
+      Jwt__Issuer: "ResalePlatform"
+      Jwt__Audience: "ResalePlatform.Client"
+    ports:
+      - "5080:8080"
+    volumes:
+      - uploads:/app/wwwroot/uploads
+
+  web:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata_full:
+  uploads:

@@ -19,7 +19,10 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Default");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString)
+            options.UseNpgsql(connectionString, npgsql =>
+                       // Повтор при временной недоступности БД — важно при старте в Docker.
+                       npgsql.EnableRetryOnFailure(maxRetryCount: 10,
+                           maxRetryDelay: TimeSpan.FromSeconds(5), errorCodesToAdd: null))
                    .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
