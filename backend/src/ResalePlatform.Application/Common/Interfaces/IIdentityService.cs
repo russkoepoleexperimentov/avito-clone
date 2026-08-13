@@ -19,4 +19,10 @@ public interface IIdentityService
 
     /// <summary>Возвращает отображаемые имена пользователей по их id (батч).</summary>
     Task<IReadOnlyDictionary<Guid, string>> GetUserNamesAsync(IEnumerable<Guid> userIds);
+
+    /// <summary>Все пользователи (для админ-панели).</summary>
+    Task<IReadOnlyList<AppUserAdminInfo>> GetAllUsersAsync();
+
+    /// <summary>Блокирует/разблокирует пользователя. Возвращает false, если пользователь — админ.</summary>
+    Task<bool> SetBlockedAsync(Guid userId, bool blocked);
 }

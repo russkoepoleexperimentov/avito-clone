@@ -66,6 +66,38 @@ public class IdentityService : IIdentityService
             .ToDictionaryAsync(u => u.Id, u => u.DisplayName);
     }
 
+    public async Task<IReadOnlyList<AppUserAdminInfo>> GetAllUsersAsync()
+    {
+        var users = await _userManager.Users
+            .OrderByDescending(u => u.CreatedAt)
+            .ToListAsync();
+
+        var result = new List<AppUserAdminInfo>(users.Count);
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            result.Add(new AppUserAdminInfo(
+                user.Id, user.Email!, user.DisplayName, roles.ToList(),
+                user.IsBlocked, user.CreatedAt));
+        }
+        return result;
+    }
+
+    public async Task<bool> SetBlockedAsync(Guid userId, bool blocked)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null)
+            return false;
+
+        // Админов блокировать нельзя.
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+            return false;
+
+        user.IsBlocked = blocked;
+        await _userManager.UpdateAsync(user);
+        return true;
+    }
+
     private async Task<AppUserInfo> ToUserInfoAsync(ApplicationUser user)
     {
         var roles = await _userManager.GetRolesAsync(user);
