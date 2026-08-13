@@ -1,36 +1,72 @@
-import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useLogin } from '../features/auth/hooks'
+import { getApiErrorMessage } from '../lib/errors'
+
+const schema = z.object({
+  email: z.string().min(1, 'Введите email').email('Некорректный email'),
+  password: z.string().min(1, 'Введите пароль'),
+})
+
+type FormValues = z.infer<typeof schema>
 
 export function LoginPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const login = useLogin()
+  const redirectTo = (location.state as { from?: string } | null)?.from ?? '/'
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+
+  const onSubmit = handleSubmit((values) => {
+    login.mutate(values, { onSuccess: () => navigate(redirectTo, { replace: true }) })
+  })
+
   return (
     <div className="mx-auto max-w-sm">
       <h1 className="mb-6 text-2xl font-bold">Вход</h1>
 
-      {/* Заглушка формы. Валидацию (RHF + zod) и запрос к /auth/login добавим на этапе 1. */}
-      <form className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
           <input
             type="email"
             className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
             placeholder="you@example.com"
-            disabled
+            {...register('email')}
           />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
         </div>
+
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">Пароль</label>
           <input
             type="password"
             className="w-full rounded-md border border-gray-300 px-3 py-2 outline-none focus:border-brand-500"
             placeholder="••••••••"
-            disabled
+            {...register('password')}
           />
+          {errors.password && (
+            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+          )}
         </div>
+
+        {login.isError && (
+          <p className="text-sm text-red-600">{getApiErrorMessage(login.error)}</p>
+        )}
+
         <button
-          type="button"
-          className="w-full rounded-md bg-brand-600 py-2 font-medium text-white hover:bg-brand-700"
-          disabled
+          type="submit"
+          disabled={login.isPending}
+          className="w-full rounded-md bg-brand-600 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-60"
         >
-          Войти
+          {login.isPending ? 'Входим…' : 'Войти'}
         </button>
       </form>
 

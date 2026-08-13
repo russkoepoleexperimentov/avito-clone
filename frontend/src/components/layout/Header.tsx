@@ -1,4 +1,5 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../features/auth/hooks'
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -6,6 +7,14 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export function Header() {
+  const { user, isAuthenticated, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
@@ -32,12 +41,30 @@ export function Header() {
           >
             Разместить
           </Link>
-          <Link
-            to="/login"
-            className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-          >
-            Войти
-          </Link>
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to="/profile"
+                className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                {user?.displayName ?? 'Профиль'}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100"
+              >
+                Выйти
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              Войти
+            </Link>
+          )}
         </div>
       </div>
     </header>
