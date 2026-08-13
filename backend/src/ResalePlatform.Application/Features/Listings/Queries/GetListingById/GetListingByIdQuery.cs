@@ -47,9 +47,16 @@ public class GetListingByIdHandler : IRequestHandler<GetListingByIdQuery, Listin
             UserId = listing.UserId,
             SellerName = seller?.DisplayName ?? "—",
             ViewsCount = listing.ViewsCount,
-            ImageUrls = listing.Images
+            Images = listing.Images
                 .OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder)
-                .Select(i => i.Url).ToList(),
+                .Select(i => new ListingImageDto
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsPrimary = i.IsPrimary,
+                    SortOrder = i.SortOrder,
+                })
+                .ToList(),
             CreatedAt = listing.CreatedAt,
             UpdatedAt = listing.UpdatedAt,
         };

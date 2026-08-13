@@ -32,7 +32,15 @@ public class ListingDto
     public Guid UserId { get; init; }
     public string SellerName { get; init; } = null!;
     public int ViewsCount { get; init; }
-    public List<string> ImageUrls { get; init; } = new();
+    public List<ListingImageDto> Images { get; init; } = new();
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset UpdatedAt { get; init; }
+}
+
+public class ListingImageDto
+{
+    public Guid Id { get; init; }
+    public string Url { get; init; } = null!;
+    public bool IsPrimary { get; init; }
+    public int SortOrder { get; init; }
 }
