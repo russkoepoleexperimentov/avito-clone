@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+/* Базовая тема проекта. Tailwind v4 читает токены из @theme. */
+@theme {
+  --color-brand-50: #eef7ff;
+  --color-brand-100: #d9edff;
+  --color-brand-500: #1e88e5;
+  --color-brand-600: #1976d2;
+  --color-brand-700: #1565c0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
