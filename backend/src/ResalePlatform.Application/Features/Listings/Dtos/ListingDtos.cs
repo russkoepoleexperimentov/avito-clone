@@ -14,6 +14,7 @@ public class ListingListItemDto
     public Guid CategoryId { get; init; }
     public string CategoryName { get; init; } = null!;
     public string? PrimaryImageUrl { get; init; }
+    public bool IsFavorite { get; init; }
     public DateTimeOffset CreatedAt { get; init; }
 }
 
@@ -32,6 +33,7 @@ public class ListingDto
     public Guid UserId { get; init; }
     public string SellerName { get; init; } = null!;
     public int ViewsCount { get; init; }
+    public bool IsFavorite { get; init; }
     public List<ListingImageDto> Images { get; init; } = new();
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset UpdatedAt { get; init; }

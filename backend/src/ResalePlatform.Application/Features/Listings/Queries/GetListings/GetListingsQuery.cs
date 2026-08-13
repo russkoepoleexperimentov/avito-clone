@@ -24,10 +24,12 @@ public class GetListingsHandler
     private const int MaxPageSize = 48;
 
     private readonly IApplicationDbContext _db;
+    private readonly ICurrentUser _currentUser;
 
-    public GetListingsHandler(IApplicationDbContext db)
+    public GetListingsHandler(IApplicationDbContext db, ICurrentUser currentUser)
     {
         _db = db;
+        _currentUser = currentUser;
     }
 
     public async Task<PagedResult<ListingListItemDto>> Handle(
@@ -73,6 +75,8 @@ public class GetListingsHandler
 
         var totalCount = await query.CountAsync(ct);
 
+        var userId = _currentUser.UserId;
+
         var items = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -88,6 +92,8 @@ public class GetListingsHandler
                 CategoryName = l.Category.Name,
                 PrimaryImageUrl = l.Images
                     .Where(i => i.IsPrimary).Select(i => i.Url).FirstOrDefault(),
+                IsFavorite = userId != null
+                    && _db.Favorites.Any(f => f.UserId == userId && f.ListingId == l.Id),
                 CreatedAt = l.CreatedAt,
             })
             .ToListAsync(ct);

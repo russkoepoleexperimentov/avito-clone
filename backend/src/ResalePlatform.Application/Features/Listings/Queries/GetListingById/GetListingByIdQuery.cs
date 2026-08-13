@@ -12,11 +12,14 @@ public class GetListingByIdHandler : IRequestHandler<GetListingByIdQuery, Listin
 {
     private readonly IApplicationDbContext _db;
     private readonly IIdentityService _identity;
+    private readonly ICurrentUser _currentUser;
 
-    public GetListingByIdHandler(IApplicationDbContext db, IIdentityService identity)
+    public GetListingByIdHandler(
+        IApplicationDbContext db, IIdentityService identity, ICurrentUser currentUser)
     {
         _db = db;
         _identity = identity;
+        _currentUser = currentUser;
     }
 
     public async Task<ListingDto> Handle(GetListingByIdQuery request, CancellationToken ct)
@@ -33,6 +36,11 @@ public class GetListingByIdHandler : IRequestHandler<GetListingByIdQuery, Listin
 
         var seller = await _identity.GetUserByIdAsync(listing.UserId);
 
+        var userId = _currentUser.UserId;
+        var isFavorite = userId != null
+            && await _db.Favorites.AnyAsync(
+                f => f.UserId == userId && f.ListingId == listing.Id, ct);
+
         return new ListingDto
         {
             Id = listing.Id,
@@ -47,6 +55,7 @@ public class GetListingByIdHandler : IRequestHandler<GetListingByIdQuery, Listin
             UserId = listing.UserId,
             SellerName = seller?.DisplayName ?? "—",
             ViewsCount = listing.ViewsCount,
+            IsFavorite = isFavorite,
             Images = listing.Images
                 .OrderByDescending(i => i.IsPrimary).ThenBy(i => i.SortOrder)
                 .Select(i => new ListingImageDto
