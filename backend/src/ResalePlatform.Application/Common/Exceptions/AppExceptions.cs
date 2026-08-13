@@ -24,6 +24,12 @@ public class UnauthorizedException : Exception
     public UnauthorizedException(string message) : base(message) { }
 }
 
+/// <summary>Доступ запрещён — недостаточно прав (403).</summary>
+public class ForbiddenException : Exception
+{
+    public ForbiddenException(string message) : base(message) { }
+}
+
 /// <summary>Сущность не найдена (404).</summary>
 public class NotFoundException : Exception
 {

@@ -1,9 +1,12 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ResalePlatform.API.Middleware;
+using ResalePlatform.API.Services;
 using ResalePlatform.Application;
+using ResalePlatform.Application.Common.Interfaces;
 using ResalePlatform.Infrastructure;
 using ResalePlatform.Infrastructure.Persistence;
 
@@ -12,7 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 const string CorsPolicy = "frontend";
 var frontendOrigin = builder.Configuration["Cors:FrontendOrigin"] ?? "http://localhost:5173";
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        // Enum'ы в JSON как строки ("New"/"Active") — удобнее для фронтенда.
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUserService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

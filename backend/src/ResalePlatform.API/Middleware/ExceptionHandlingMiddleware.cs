@@ -37,6 +37,7 @@ public class ExceptionHandlingMiddleware
             ValidationException => (HttpStatusCode.BadRequest, "Ошибка валидации"),
             ConflictException => (HttpStatusCode.Conflict, "Конфликт"),
             UnauthorizedException => (HttpStatusCode.Unauthorized, "Не авторизовано"),
+            ForbiddenException => (HttpStatusCode.Forbidden, "Доступ запрещён"),
             NotFoundException => (HttpStatusCode.NotFound, "Не найдено"),
             _ => (HttpStatusCode.InternalServerError, "Внутренняя ошибка сервера"),
         };
