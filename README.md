@@ -20,7 +20,22 @@ PostgreSQL + EF Core · Clean Architecture (CQRS/MediatR) · JWT-аутенти�
 
 ---
 
-## Запуск локально
+## Запуск всего в Docker (одна команда)
+
+```bash
+docker compose -f docker-compose.full.yml up --build
+```
+
+Поднимает PostgreSQL, API и фронтенд (nginx). Миграции и seed выполняются
+автоматически.
+
+- Приложение: **http://localhost:8080**
+- Swagger: http://localhost:5080/swagger
+
+Остановить: `docker compose -f docker-compose.full.yml down` (добавьте `-v`,
+чтобы удалить данные).
+
+## Запуск локально (для разработки)
 
 Приложение состоит из трёх частей: база данных, backend API и frontend.
 Нужно запустить все три.
@@ -127,5 +142,6 @@ ResalePlatform/
 - [x] Сообщения (чат, realtime через SignalR)
 - [x] Админ-панель (пользователи, категории, объявления)
 - [x] Интеграционные тесты (Testcontainers + WebApplicationFactory)
+- [x] Docker (полный стек) + CI (GitHub Actions)
 
 Подробности — в [REQUIREMENTS.md](REQUIREMENTS.md).
