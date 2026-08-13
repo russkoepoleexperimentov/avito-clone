@@ -132,3 +132,6 @@ app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 await DbInitializer.InitializeAsync(app.Services);
 
 app.Run();
+
+// Делает автоматически сгенерированный Program доступным для WebApplicationFactory в тестах.
+public partial class Program;

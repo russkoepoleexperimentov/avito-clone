@@ -61,6 +61,20 @@ npm run dev
 
 ---
 
+## Тесты
+
+Интеграционные тесты (backend) поднимают одноразовый PostgreSQL в Docker
+через **Testcontainers** и гоняют реальные HTTP-запросы к приложению
+(`WebApplicationFactory`) — проверяются аутентификация, авторизация,
+CRUD объявлений, каталог, избранное, категории.
+
+```bash
+cd backend
+dotnet test
+```
+
+> Требуется запущенный Docker (Testcontainers сам поднимет и удалит контейнер).
+
 ## Учётная запись администратора (seed)
 
 | Поле | Значение |
@@ -112,5 +126,6 @@ ResalePlatform/
 - [x] Избранное
 - [x] Сообщения (чат, realtime через SignalR)
 - [x] Админ-панель (пользователи, категории, объявления)
+- [x] Интеграционные тесты (Testcontainers + WebApplicationFactory)
 
 Подробности — в [REQUIREMENTS.md](REQUIREMENTS.md).
