@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ResalePlatform.API.Hubs;
 using ResalePlatform.API.Middleware;
 using ResalePlatform.API.Services;
 using ResalePlatform.Application;
@@ -24,6 +25,8 @@ builder.Services.AddControllers()
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUserService>();
 builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IChatNotifier, ChatNotifier>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -55,7 +58,10 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddCors(options =>
     options.AddPolicy(CorsPolicy, policy =>
-        policy.WithOrigins(frontendOrigin).AllowAnyHeader().AllowAnyMethod()));
+        policy.WithOrigins(frontendOrigin)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials())); // нужно для SignalR
 
 // JWT-аутентификация.
 var jwt = builder.Configuration.GetSection("Jwt");
@@ -73,6 +79,22 @@ builder.Services
             ValidAudience = jwt["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!)),
             ClockSkew = TimeSpan.FromSeconds(30),
+        };
+
+        // SignalR не может передать заголовок Authorization при WebSocket —
+        // берём токен из query-строки для запросов к хабу.
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            },
         };
     });
 builder.Services.AddAuthorization();
@@ -102,6 +124,7 @@ app.UseCors(CorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 

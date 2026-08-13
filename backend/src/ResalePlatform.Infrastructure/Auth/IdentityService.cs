@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ResalePlatform.Application.Common.Interfaces;
 using ResalePlatform.Application.Common.Models;
 using ResalePlatform.Infrastructure.Identity;
@@ -55,6 +56,14 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         return user is null ? null : await ToUserInfoAsync(user);
+    }
+
+    public async Task<IReadOnlyDictionary<Guid, string>> GetUserNamesAsync(IEnumerable<Guid> userIds)
+    {
+        var ids = userIds.Distinct().ToList();
+        return await _userManager.Users
+            .Where(u => ids.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.DisplayName);
     }
 
     private async Task<AppUserInfo> ToUserInfoAsync(ApplicationUser user)

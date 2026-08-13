@@ -16,4 +16,7 @@ public interface IIdentityService
     Task<AppUserInfo?> ValidateCredentialsAsync(string email, string password);
 
     Task<AppUserInfo?> GetUserByIdAsync(Guid userId);
+
+    /// <summary>Возвращает отображаемые имена пользователей по их id (батч).</summary>
+    Task<IReadOnlyDictionary<Guid, string>> GetUserNamesAsync(IEnumerable<Guid> userIds);
 }
