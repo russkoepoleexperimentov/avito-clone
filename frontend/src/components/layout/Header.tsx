@@ -32,6 +32,11 @@ export function Header() {
           <NavLink to="/my-listings" className={navLinkClass}>
             Мои объявления
           </NavLink>
+          {isAuthenticated && (
+            <NavLink to="/chat" className={navLinkClass}>
+              Сообщения
+            </NavLink>
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">

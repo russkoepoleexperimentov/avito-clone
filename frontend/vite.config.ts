@@ -18,6 +18,12 @@ export default defineConfig({
         target: 'http://localhost:5080',
         changeOrigin: true,
       },
+      // SignalR-хаб чата (WebSocket).
+      '/hubs': {
+        target: 'http://localhost:5080',
+        changeOrigin: true,
+        ws: true,
+      },
     },
   },
 })

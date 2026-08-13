@@ -10,6 +10,8 @@ import { MyListingsPage } from './pages/MyListingsPage'
 import { FavoritesPage } from './pages/FavoritesPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { NotFoundPage } from './pages/NotFoundPage'
+import { ConversationsPage } from './pages/ConversationsPage'
+import { ConversationPage } from './pages/ConversationPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
 
 export default function App() {
@@ -28,6 +30,8 @@ export default function App() {
           <Route path="listings/:id/edit" element={<EditListingPage />} />
           <Route path="my-listings" element={<MyListingsPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="chat" element={<ConversationsPage />} />
+          <Route path="chat/:id" element={<ConversationPage />} />
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 

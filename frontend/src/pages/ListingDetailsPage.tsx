@@ -3,15 +3,17 @@ import { useListing, useDeleteListing } from '../features/listings/hooks'
 import { conditionLabels, statusLabels } from '../features/listings/types'
 import { ListingGallery } from '../features/listings/components/ListingGallery'
 import { FavoriteButton } from '../features/favorites/components/FavoriteButton'
+import { useStartConversation } from '../features/chat/hooks'
 import { useAuth } from '../features/auth/hooks'
 import { formatPrice, formatDate } from '../lib/format'
 
 export function ListingDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   const { data: listing, isLoading, isError } = useListing(id!)
   const del = useDeleteListing()
+  const startChat = useStartConversation()
 
   if (isLoading) return <p className="text-gray-500">Загрузка…</p>
   if (isError || !listing) return <p className="text-gray-500">Объявление не найдено.</p>
@@ -22,6 +24,14 @@ export function ListingDetailsPage() {
     if (confirm('Удалить объявление?')) {
       del.mutate(listing.id, { onSuccess: () => navigate('/my-listings') })
     }
+  }
+
+  const handleMessage = () => {
+    if (!isAuthenticated) {
+      navigate('/login')
+      return
+    }
+    startChat.mutate(listing.id, { onSuccess: (cid) => navigate(`/chat/${cid}`) })
   }
 
   return (
@@ -78,8 +88,12 @@ export function ListingDetailsPage() {
             </div>
           ) : (
             <div className="mt-6 flex gap-2">
-              <button className="rounded-md bg-brand-600 px-5 py-2 font-medium text-white hover:bg-brand-700">
-                Написать продавцу
+              <button
+                onClick={handleMessage}
+                disabled={startChat.isPending}
+                className="rounded-md bg-brand-600 px-5 py-2 font-medium text-white hover:bg-brand-700 disabled:opacity-60"
+              >
+                {startChat.isPending ? 'Открываем…' : 'Написать продавцу'}
               </button>
               <FavoriteButton
                 listingId={listing.id}
