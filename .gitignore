@@ -1,0 +1,41 @@
+# ---------- .NET ----------
+bin/
+obj/
+out/
+*.user
+*.suo
+.vs/
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# ---------- Rider / VS ----------
+.idea/
+*.DotSettings.user
+
+# ---------- Node / Frontend ----------
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+coverage/
+
+# ---------- Env & secrets ----------
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+*.pfx
+
+# ---------- Claude Code (local) ----------
+.claude/settings.local.json
+
+# ---------- OS ----------
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ---------- Logs ----------
+*.log
+logs/

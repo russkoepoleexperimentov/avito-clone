@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: resaleplatform-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: resaleplatform
+      POSTGRES_USER: resale
+      POSTGRES_PASSWORD: resale
+    ports:
+      # На хосте уже занят 5432 (нативный PostgreSQL), поэтому наружу отдаём 5433.
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
