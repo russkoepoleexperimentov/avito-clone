@@ -12,7 +12,12 @@ import { ProfilePage } from './pages/ProfilePage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { ConversationsPage } from './pages/ConversationsPage'
 import { ConversationPage } from './pages/ConversationPage'
+import { AdminLayout } from './pages/admin/AdminLayout'
+import { AdminUsersPage } from './pages/admin/AdminUsersPage'
+import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
+import { AdminListingsPage } from './pages/admin/AdminListingsPage'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { AdminRoute } from './components/AdminRoute'
 
 export default function App() {
   return (
@@ -33,6 +38,16 @@ export default function App() {
           <Route path="chat" element={<ConversationsPage />} />
           <Route path="chat/:id" element={<ConversationPage />} />
           <Route path="profile" element={<ProfilePage />} />
+        </Route>
+
+        {/* Только для администраторов */}
+        <Route element={<AdminRoute />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<AdminUsersPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="listings" element={<AdminListingsPage />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

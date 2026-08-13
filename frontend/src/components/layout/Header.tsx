@@ -37,6 +37,11 @@ export function Header() {
               Сообщения
             </NavLink>
           )}
+          {user?.roles.includes('Admin') && (
+            <NavLink to="/admin" className={navLinkClass}>
+              Админ
+            </NavLink>
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
