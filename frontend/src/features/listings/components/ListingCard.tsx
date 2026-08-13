@@ -1,13 +1,17 @@
 import { Link } from 'react-router-dom'
 import type { ListingListItem } from '../types'
 import { formatPrice } from '../../../lib/format'
+import { FavoriteButton } from '../../favorites/components/FavoriteButton'
 
 export function ListingCard({ listing }: { listing: ListingListItem }) {
   return (
     <Link
       to={`/listings/${listing.id}`}
-      className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
+      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
     >
+      <div className="absolute right-2 top-2 z-10">
+        <FavoriteButton listingId={listing.id} isFavorite={listing.isFavorite} />
+      </div>
       <div className="aspect-square overflow-hidden bg-gray-100">
         {listing.primaryImageUrl ? (
           <img

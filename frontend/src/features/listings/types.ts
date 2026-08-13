@@ -23,6 +23,7 @@ export interface ListingListItem {
   categoryId: string
   categoryName: string
   primaryImageUrl: string | null
+  isFavorite: boolean
   createdAt: string
 }
 
@@ -46,6 +47,7 @@ export interface Listing {
   userId: string
   sellerName: string
   viewsCount: number
+  isFavorite: boolean
   images: ListingImage[]
   createdAt: string
   updatedAt: string

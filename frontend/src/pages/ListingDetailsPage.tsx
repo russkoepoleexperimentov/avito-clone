@@ -2,6 +2,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useListing, useDeleteListing } from '../features/listings/hooks'
 import { conditionLabels, statusLabels } from '../features/listings/types'
 import { ListingGallery } from '../features/listings/components/ListingGallery'
+import { FavoriteButton } from '../features/favorites/components/FavoriteButton'
 import { useAuth } from '../features/auth/hooks'
 import { formatPrice, formatDate } from '../lib/format'
 
@@ -76,9 +77,16 @@ export function ListingDetailsPage() {
               </button>
             </div>
           ) : (
-            <button className="mt-6 rounded-md bg-brand-600 px-5 py-2 font-medium text-white hover:bg-brand-700">
-              Написать продавцу
-            </button>
+            <div className="mt-6 flex gap-2">
+              <button className="rounded-md bg-brand-600 px-5 py-2 font-medium text-white hover:bg-brand-700">
+                Написать продавцу
+              </button>
+              <FavoriteButton
+                listingId={listing.id}
+                isFavorite={listing.isFavorite}
+                variant="button"
+              />
+            </div>
           )}
         </div>
       </div>
