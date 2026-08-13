@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ResalePlatform.Domain.Entities;
 using ResalePlatform.Infrastructure.Identity;
 
 namespace ResalePlatform.Infrastructure.Persistence;
@@ -47,5 +48,66 @@ public static class DbInitializer
             if (result.Succeeded)
                 await userManager.AddToRoleAsync(admin, "Admin");
         }
+
+        await SeedCategoriesAsync(db);
+    }
+
+    private static async Task SeedCategoriesAsync(AppDbContext db)
+    {
+        if (await db.Categories.AnyAsync())
+            return;
+
+        // (Название, slug, [подкатегории: (Название, slug)])
+        var tree = new (string Name, string Slug, (string Name, string Slug)[] Children)[]
+        {
+            ("Электроника", "electronics", new[]
+            {
+                ("Телефоны", "phones"), ("Ноутбуки", "laptops"), ("Телевизоры", "tv"),
+            }),
+            ("Транспорт", "transport", new[]
+            {
+                ("Автомобили", "cars"), ("Запчасти", "auto-parts"),
+            }),
+            ("Недвижимость", "realty", new[]
+            {
+                ("Квартиры", "apartments"), ("Дома", "houses"),
+            }),
+            ("Личные вещи", "personal", new[]
+            {
+                ("Одежда", "clothing"), ("Обувь", "shoes"),
+            }),
+            ("Дом и сад", "home-garden", new[]
+            {
+                ("Мебель", "furniture"), ("Бытовая техника", "appliances"),
+            }),
+        };
+
+        var order = 0;
+        foreach (var (name, slug, children) in tree)
+        {
+            var parent = new Category
+            {
+                Id = Guid.NewGuid(),
+                Name = name,
+                Slug = slug,
+                SortOrder = order++,
+            };
+            db.Categories.Add(parent);
+
+            var childOrder = 0;
+            foreach (var (childName, childSlug) in children)
+            {
+                db.Categories.Add(new Category
+                {
+                    Id = Guid.NewGuid(),
+                    Name = childName,
+                    Slug = childSlug,
+                    ParentId = parent.Id,
+                    SortOrder = childOrder++,
+                });
+            }
+        }
+
+        await db.SaveChangesAsync();
     }
 }

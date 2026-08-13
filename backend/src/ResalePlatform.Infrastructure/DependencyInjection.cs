@@ -22,6 +22,8 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString)
                    .UseSnakeCaseNamingConvention());
 
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
         services.AddIdentityCore<ApplicationUser>(options =>
             {
                 options.Password.RequiredLength = 6;
