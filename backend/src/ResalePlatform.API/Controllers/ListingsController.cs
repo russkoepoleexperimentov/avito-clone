@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ResalePlatform.Application.Common.Interfaces;
+using ResalePlatform.Application.Common.Models;
 using ResalePlatform.Application.Features.Listings.Commands.AddListingImages;
 using ResalePlatform.Application.Features.Listings.Commands.CreateListing;
 using ResalePlatform.Application.Features.Listings.Commands.DeleteListing;
@@ -10,6 +11,7 @@ using ResalePlatform.Application.Features.Listings.Commands.SetPrimaryImage;
 using ResalePlatform.Application.Features.Listings.Commands.UpdateListing;
 using ResalePlatform.Application.Features.Listings.Dtos;
 using ResalePlatform.Application.Features.Listings.Queries.GetListingById;
+using ResalePlatform.Application.Features.Listings.Queries.GetListings;
 using ResalePlatform.Application.Features.Listings.Queries.GetMyListings;
 using ResalePlatform.Domain.Enums;
 
@@ -25,6 +27,12 @@ public class ListingsController : ControllerBase
     {
         _mediator = mediator;
     }
+
+    /// <summary>Каталог объявлений с поиском, фильтрами, сортировкой и пагинацией (публично).</summary>
+    [HttpGet]
+    public async Task<ActionResult<PagedResult<ListingListItemDto>>> Get(
+        [FromQuery] GetListingsQuery query)
+        => Ok(await _mediator.Send(query));
 
     /// <summary>Карточка объявления (публично).</summary>
     [HttpGet("{id:guid}")]
